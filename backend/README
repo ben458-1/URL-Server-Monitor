@@ -1,0 +1,306 @@
+# URL Monitoring System - Backend
+
+FastAPI-based backend for real-time URL health monitoring with PostgreSQL and WebSocket support.
+
+## Features
+
+- RESTful API for URL management
+- Automated health checking every 1 minute
+- Real-time updates via WebSocket
+- PostgreSQL database with optimized queries
+- Health status history tracking (last 20 minutes)
+- Statistics and analytics
+
+## Prerequisites
+
+- Python 3.8+
+- PostgreSQL 12+
+- pip
+
+## Installation
+
+### 1. Install PostgreSQL
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+```
+
+**macOS:**
+```bash
+brew install postgresql
+brew services start postgresql
+```
+
+### 2. Create Database
+
+```bash
+# Login to PostgreSQL
+sudo -u postgres psql
+
+# Create database
+CREATE DATABASE url_healthcheck;
+
+# Create user (optional)
+CREATE USER your_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE url_healthcheck TO your_user;
+
+# Exit
+\q
+```
+
+### 3. Setup Python Environment
+
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Linux/Mac:
+source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment Variables
+
+Edit the `.env` file with your database credentials:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=url_healthcheck
+DB_USER=postgres
+DB_PASSWORD=your_password
+
+API_PORT=8000
+ENVIRONMENT=development
+```
+
+### 5. Initialize Database
+
+Run the initialization script:
+
+```bash
+python database/init_db.py
+```
+
+This will create all necessary tables, indexes, and triggers.
+
+**Other options:**
+
+```bash
+# Reset database (drop and recreate)
+python database/init_db.py reset
+
+# Drop all tables
+python database/init_db.py drop
+```
+
+The database will also be automatically initialized when you start the application for the first time.
+
+## Running the Application
+
+### Development Mode
+
+```bash
+python main.py
+```
+
+Or using uvicorn directly:
+
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Production Mode
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+The API will be available at: `http://localhost:8000`
+
+API Documentation: `http://localhost:8000/docs`
+
+## API Endpoints
+
+### URLs
+
+- `POST /api/urls` - Create new URL
+- `GET /api/urls` - Get all URLs
+- `GET /api/urls/{id}` - Get specific URL
+- `PUT /api/urls/{id}` - Update URL
+- `DELETE /api/urls/{id}` - Delete URL
+- `GET /api/urls/environment/{env}` - Get URLs by environment
+
+### Health Status
+
+- `GET /api/health/url/{id}` - Get current health status
+- `GET /api/health/url/{id}/history?minutes=20` - Get health history
+- `GET /api/health/all-latest` - Get latest status for all URLs
+- `GET /api/health/stats` - Get overall statistics
+
+### Projects
+
+- `GET /api/projects` - Get all project categories
+- `POST /api/projects` - Create project category
+- `DELETE /api/projects/{id}` - Delete project category
+
+### WebSocket
+
+- `ws://localhost:8000/ws` - WebSocket connection for real-time updates
+
+## WebSocket Message Format
+
+### Messages sent to clients:
+
+```json
+{
+  "type": "health_update",
+  "data": {
+    "url_id": 1,
+    "status": "online",
+    "response_time": 245,
+    "status_code": 200,
+    "checked_at": "2025-01-15T10:30:00",
+    "error_message": null
+  }
+}
+```
+
+## Example API Requests
+
+### Create URL
+
+```bash
+curl -X POST "http://localhost:8000/api/urls" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_name": "My API",
+    "url": "https://api.example.com",
+    "environment": "production",
+    "project_category": "Backend",
+    "server_ip": "192.168.1.10",
+    "port": 443,
+    "server_location": "India"
+  }'
+```
+
+### Get Health History
+
+```bash
+curl "http://localhost:8000/api/health/url/1/history?minutes=20"
+```
+
+### Get Statistics
+
+```bash
+curl "http://localhost:8000/api/health/stats"
+```
+
+## Health Checking
+
+The health checker service runs automatically in the background:
+
+- Checks all URLs every 1 minute
+- Stores results in the database
+- Broadcasts updates to WebSocket clients
+- Tracks response time and status codes
+- Records error messages for failed checks
+
+## Project Structure
+
+```
+backend/
+├── main.py                 # FastAPI application
+├── requirements.txt        # Python dependencies
+├── .env                    # Environment variables
+├── config/
+│   └── database.py         # Database configuration
+├── models/
+│   ├── schemas.py          # Pydantic models
+│   └── database_models.py  # Database operations
+├── routes/
+│   ├── urls.py             # URL endpoints
+│   └── health.py           # Health & project endpoints
+├── services/
+│   └── health_checker.py   # Background health checker
+└── database/
+    └── init_db.sql         # Database schema
+```
+
+## Troubleshooting
+
+### Database Connection Error
+
+```
+Error connecting to database
+```
+
+**Solution:** Check your PostgreSQL service is running and credentials in `.env` are correct.
+
+### Import Errors
+
+```
+ModuleNotFoundError: No module named 'fastapi'
+```
+
+**Solution:** Make sure virtual environment is activated and dependencies are installed:
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Port Already in Use
+
+```
+Address already in use
+```
+
+**Solution:** Change the port in `.env` or stop the process using port 8000:
+```bash
+# Find process
+lsof -i :8000
+# Kill process
+kill -9 <PID>
+```
+
+## Logs
+
+The application logs include:
+- Health check results
+- Database operations
+- WebSocket connections
+- API requests
+
+Check console output for real-time logs.
+
+## Development
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black .
+```
+
+### Type Checking
+
+```bash
+mypy .
+```
+
+## License
+
+MIT

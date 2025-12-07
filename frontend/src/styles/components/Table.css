@@ -1,0 +1,176 @@
+.table-container {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* Center align Actions column (last column) for all tables */
+th:last-child, td:last-child {
+  text-align: center;
+}
+
+/* Center align Status and Timeline columns for URL table */
+table th:nth-child(5), table td:nth-child(5) { /* Status */
+  text-align: center;
+}
+
+table th:nth-child(6), table td:nth-child(6) { /* Last 10 Minutes */
+  text-align: center;
+}
+
+/* Center align Port, Location, Created At for Server table */
+.table-container table th:nth-child(2):not(:last-child),
+.table-container table td:nth-child(2):not(:last-child) { /* Port */
+  text-align: center;
+}
+
+.table-container table th:nth-child(3):not(:last-child),
+.table-container table td:nth-child(3):not(:last-child) { /* Location */
+  text-align: center;
+}
+
+.table-container table th:nth-child(4):not(:last-child),
+.table-container table td:nth-child(4):not(:last-child) { /* Created At or Server */
+  text-align: center;
+}
+
+tbody tr:hover {
+  background: #f9fafb;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid #e5e7eb;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.action-btn.edit:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.action-btn.delete:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.action-btn.description-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: help;
+}
+
+.action-btn.description-btn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.05);
+}
+/* Health Check Toggle Switch */
+.health-check-toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  margin-left: 8px;
+}
+
+.health-check-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.health-check-toggle input:checked + .toggle-slider {
+  background-color: #4caf50;
+}
+
+.health-check-toggle input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+.health-check-toggle input:disabled + .toggle-slider {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # --- GENERAL APP ---
+  backend:
+    image: imagerepository.euroland.com/monitor-tool-backend:13112025
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    networks:
+      - wise-model-interface_default_network
+
+  frontend:
+    image: imagerepository.euroland.com/monitor-tool-frontend:13112025
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+    depends_on:
+      - backend
+    networks:
+      - wise-model-interface_default_network
+      
+
+networks:
+  wise-model-interface_default_network:
+    driver: bridge

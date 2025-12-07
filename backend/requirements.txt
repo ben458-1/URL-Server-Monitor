@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+psycopg2-binary
+APScheduler
+httpx
+python-dotenv
+websockets
+pydantic
+pydantic-settings
+msal
+python-jose[cryptography]
+cryptography
+requests
+email-validator
+paramiko
